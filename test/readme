@@ -1,0 +1,5 @@
+cloudflared.exe tunnel run --url http://localhost:3000 localTest
+ngrok http --domain=nonretentive-unillusive-marhta.ngrok-free.dev 3000
+*(If your project runs on a different port like 5173 or 8080, just change the `3000` in that command).*
+
+As long as that command is running in your terminal, anyone visiting `test.ammit.is-a.dev` will see your local UI. When you press `Ctrl + C` to stop it (or turn off your PC), they will instantly see the Material 3 Fallback page!

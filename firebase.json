@@ -1,0 +1,45 @@
+{
+  "hosting": [
+    {
+      "target": "home",
+      "public": "home",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "cleanUrls": true,
+      "headers": [
+        {
+          "source": "/license",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "text/html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target": "test",
+      "public": "test",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "cleanUrls": true
+    },
+    {
+      "target": "assets.amit.is-a.dev",
+      "public": "assets.amit.is-a.dev",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "cleanUrls": true
+    }
+  ]
+}

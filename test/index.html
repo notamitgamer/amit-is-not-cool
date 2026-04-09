@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testing Gateway</title>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    :root {
+      --md-sys-color-background:           #111318;
+      --md-sys-color-on-background:        #e2e2e9;
+      --md-sys-color-surface:              #191c20;
+      --md-sys-color-surface-container:    #1d2024;
+      --md-sys-color-surface-container-hi: #282b30;
+      --md-sys-color-outline:              #8d9199;
+      --md-sys-color-outline-variant:      #43474e;
+      --md-sys-color-primary:              #a8c7fa;
+      --md-sys-color-on-primary:           #062e6f;
+      --md-sys-color-primary-container:    #0842a0;
+      --md-sys-color-on-primary-container: #d6e3ff;
+      --md-sys-color-secondary:            #bec6dc;
+      --md-sys-color-error:                #ffb4ab;
+      --md-sys-color-error-container:      #93000a;
+      --md-sys-color-success:              #6dd58c;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body, body *, button, input, textarea {
+      font-family: 'Google Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    }
+    
+    /* FIX: Ensure Material Icons override the strict Google Sans rule above */
+    .material-icons-round {
+      font-family: 'Material Icons Round' !important;
+    }
+
+    body {
+      font-family: 'Google Sans', sans-serif;
+      background-color: var(--md-sys-color-background);
+      color: var(--md-sys-color-on-background);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* Card */
+    .md-card {
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: 28px;
+      padding: 40px 32px;
+      width: 100%;
+      max-width: 444px;
+      box-shadow: 0px 1px 2px rgba(0,0,0,0.3), 0px 2px 6px 2px rgba(0,0,0,0.15);
+    }
+
+    /* M3 Circular Progress */
+    .md-progress {
+      width: 48px; height: 48px;
+      margin: 0 auto 28px;
+    }
+    .md-progress svg {
+      width: 100%; height: 100%;
+      animation: md-rotate 1.5s linear infinite;
+    }
+    .md-progress circle {
+      fill: none;
+      stroke: var(--md-sys-color-primary);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 100;
+      animation: md-dash 1.5s ease-in-out infinite;
+    }
+    @keyframes md-rotate { 100% { transform: rotate(360deg); } }
+    @keyframes md-dash {
+      0%   { stroke-dashoffset: 100; }
+      50%  { stroke-dashoffset: 25; }
+      100% { stroke-dashoffset: 100; }
+    }
+
+    /* Icon states */
+    .md-icon-state {
+      display: none;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      margin: 0 auto 28px;
+      align-items: center;
+      justify-content: center;
+    }
+    .md-icon-state .material-icons-round { font-size: 28px; }
+    .md-icon-state.success { background-color: rgba(109,213,140,0.12); color: var(--md-sys-color-success); }
+    .md-icon-state.error   { background-color: rgba(255,180,171,0.12); color: var(--md-sys-color-error); }
+    .md-icon-state.show    { display: flex; animation: iconPop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes iconPop {
+      from { transform: scale(0.4); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* Status chip */
+    .md-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--md-sys-color-outline);
+      margin-bottom: 20px;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .chip-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .md-chip.checking { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); }
+    .md-chip.checking .chip-dot { animation: chipPulse 1.2s ease-in-out infinite; }
+    .md-chip.online   { border-color: var(--md-sys-color-success); color: var(--md-sys-color-success); }
+    .md-chip.offline  { border-color: var(--md-sys-color-error); color: var(--md-sys-color-error); }
+    @keyframes chipPulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+    /* Typography */
+    .headline {
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 32px;
+      margin-bottom: 6px;
+      transition: opacity 0.2s;
+    }
+    .body-text {
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--md-sys-color-outline);
+      transition: opacity 0.2s;
+    }
+    .text-block { margin-bottom: 0; }
+
+    /* Divider */
+    .md-divider {
+      height: 1px;
+      background: var(--md-sys-color-outline-variant);
+      margin: 28px 0;
+      opacity: 0.5;
+    }
+
+    /* Notice */
+    .md-notice {
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .md-notice-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .md-notice-header .material-icons-round { font-size: 18px; color: var(--md-sys-color-primary); }
+    .md-notice-label { font-size: 14px; font-weight: 500; color: var(--md-sys-color-primary); }
+    .md-notice p { font-size: 12px; line-height: 18px; color: var(--md-sys-color-outline); }
+    code {
+      font-family: 'Google Sans Mono', monospace;
+      font-size: 11px;
+      background: var(--md-sys-color-surface-container-hi);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--md-sys-color-secondary);
+    }
+
+    /* Filled Tonal Button */
+    .md-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      border: none;
+      border-radius: 20px;
+      padding: 10px 24px;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      transition: box-shadow 0.2s;
+    }
+    .md-btn .material-icons-round { font-size: 18px; }
+    .md-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--md-sys-color-on-primary-container);
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: inherit;
+    }
+    .md-btn:hover  { box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    .md-btn:hover::after  { opacity: 0.08; }
+    .md-btn:active::after { opacity: 0.12; }
+    .md-btn:active { transform: scale(0.98); }
+
+    /* Ripple */
+    .md-ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(214,227,255,0.3);
+      transform: scale(0);
+      pointer-events: none;
+      animation: ripple 0.5s ease-out forwards;
+    }
+    @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+    /* States */
+    #loading-state, #info-state { transition: opacity 0.25s ease; }
+    #info-state { display: none; opacity: 0; }
+
+    .fade-in  { animation: fadeUp 0.3s ease forwards; }
+    .fade-out { animation: fadeOut 0.2s ease forwards; }
+    @keyframes fadeUp  { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeOut { from { opacity:1; } to { opacity:0; } }
+  </style>
+</head>
+<body>
+  <div class="md-card">
+
+    <!-- CHECKING / RESULT STATE -->
+    <div id="loading-state">
+      <div class="md-progress" id="spinner">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20"/></svg>
+      </div>
+      <div class="md-icon-state success" id="icon-success">
+        <span class="material-icons-round">check</span>
+      </div>
+      <div class="md-icon-state error" id="icon-error">
+        <span class="material-icons-round">cloud_off</span>
+      </div>
+
+      <div class="md-chip checking" id="status-chip">
+        <span class="chip-dot"></span>
+        <span id="chip-label">Checking</span>
+      </div>
+
+      <div class="text-block">
+        <div class="headline" id="status-title">Locating server</div>
+        <p class="body-text" id="status-sub">Connecting to development environment…</p>
+      </div>
+    </div>
+
+    <!-- OFFLINE INFO STATE -->
+    <div id="info-state">
+      <div class="md-chip offline">
+        <span class="chip-dot"></span>
+        <span>Server Offline</span>
+      </div>
+
+      <div class="text-block" style="margin-bottom:0">
+        <div class="headline">Testing Gateway</div>
+        <p class="body-text">The local development server is currently inactive. This page will redirect automatically once the environment comes online.</p>
+      </div>
+
+      <div class="md-divider"></div>
+
+      <div class="md-notice">
+        <div class="md-notice-header">
+          <span class="material-icons-round">info</span>
+          <span class="md-notice-label">Notice — Maintainers &amp; Visitors</span>
+        </div>
+        <p>
+          <code>test.amit.is-not.cool</code> acts as a dynamic gateway for localhost. A Cloudflare Worker proxies traffic to my local machine when online, and falls back to this static page when offline.
+        </p>
+      </div>
+      <div class="md-notice">
+        <div class="md-notice-header">
+          <span class="material-icons-round">security</span>
+          <span class="md-notice-label">Security Notice</span>
+        </div>
+        <p>
+          This portal serves as a secure gateway to a proxied local environment. Access is strictly governed by Cloudflare.
+        </p>
+      </div>
+
+      <button class="md-btn" id="refresh-btn" onclick="onRefreshClick(event)">
+        <span class="material-icons-round" id="refresh-icon">refresh</span>
+        Refresh connection
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const spinner   = document.getElementById('spinner');
+    const iconOk    = document.getElementById('icon-success');
+    const iconErr   = document.getElementById('icon-error');
+    const chip      = document.getElementById('status-chip');
+    const chipLabel = document.getElementById('chip-label');
+    const titleEl   = document.getElementById('status-title');
+    const subEl     = document.getElementById('status-sub');
+    const loading   = document.getElementById('loading-state');
+    const info      = document.getElementById('info-state');
+
+    function setChip(state, label) {
+      chip.className = 'md-chip ' + state;
+      chipLabel.textContent = label;
+    }
+
+    function setText(title, sub) {
+      [titleEl, subEl].forEach(el => el.style.opacity = '0');
+      setTimeout(() => {
+        titleEl.textContent = title;
+        subEl.textContent   = sub;
+        [titleEl, subEl].forEach(el => el.style.opacity = '1');
+      }, 180);
+    }
+
+    function showSpinner() {
+      spinner.style.display = 'block';
+      iconOk.classList.remove('show');
+      iconErr.classList.remove('show');
+    }
+
+    function showIcon(which) {
+      spinner.style.display = 'none';
+      iconOk.classList.remove('show');
+      iconErr.classList.remove('show');
+      document.getElementById('icon-' + which).classList.add('show');
+    }
+
+    function checkServer() {
+      showSpinner();
+      setChip('checking', 'Checking');
+      setText('Locating server', 'Connecting to development environment…');
+
+      setTimeout(() => {
+        fetch('/--check-connection')
+          .then(r => r.json())
+          .then(d => d.status === 'online' ? onOnline() : onOffline())
+          .catch(() => onOffline());
+      }, 800);
+    }
+
+    function onOnline() {
+      showIcon('success');
+      setChip('online', 'Online');
+      setText('Connection established', 'Redirecting to development server…');
+      document.cookie = 'route_target=local; path=/; max-age=86400';
+      setTimeout(() => window.location.reload(), 1800);
+    }
+
+    function onOffline() {
+      showIcon('error');
+      setChip('offline', 'Offline');
+      setText('Server offline', 'Development environment is currently inactive.');
+      setTimeout(() => {
+        loading.classList.add('fade-out');
+        loading.addEventListener('animationend', () => {
+          loading.style.display = 'none';
+          loading.classList.remove('fade-out');
+          info.style.display = 'block';
+          requestAnimationFrame(() => {
+            info.style.opacity = '1';
+            info.classList.add('fade-in');
+            info.addEventListener('animationend', () => info.classList.remove('fade-in'), { once: true });
+          });
+        }, { once: true });
+      }, 1000);
+    }
+
+    function onRefreshClick(e) {
+      // Ripple
+      const btn  = document.getElementById('refresh-btn');
+      const rect = btn.getBoundingClientRect();
+      const r    = document.createElement('span');
+      r.className = 'md-ripple';
+      const size = Math.max(rect.width, rect.height);
+      r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+      btn.appendChild(r);
+      r.addEventListener('animationend', () => r.remove());
+
+      // Spin the refresh icon once
+      const icon = document.getElementById('refresh-icon');
+      icon.style.transition = 'transform 0.45s cubic-bezier(0.4,0,0.2,1)';
+      icon.style.transform  = 'rotate(360deg)';
+      setTimeout(() => { icon.style.transition = 'none'; icon.style.transform = ''; }, 460);
+
+      // Swap state
+      info.classList.add('fade-out');
+      info.addEventListener('animationend', () => {
+        info.style.display  = 'none';
+        info.style.opacity  = '0';
+        info.classList.remove('fade-out');
+        loading.style.display = 'block';
+        loading.classList.add('fade-in');
+        loading.addEventListener('animationend', () => loading.classList.remove('fade-in'), { once: true });
+        checkServer();
+      }, { once: true });
+    }
+
+    window.onload = checkServer;
+  </script>
+</body>
+</html>
