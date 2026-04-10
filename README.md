@@ -4,3 +4,6 @@
 > This project is not abandoned, but it receives updates very infrequently. <br>
 > ***Issues and Pull Requests may be submitted, but expect significant delays in reviews.***
 > 
+
+> [!NOTE]
+> This the v2 of amit.is-a.dev
